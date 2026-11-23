@@ -18,7 +18,12 @@ jobs:
         with:
           gradle-version: '8.9'
       - name: Build
-        run: gradle assembleRelease --no-daemon --stacktrace
+        run: |
+          for i in 1 2 3; do
+            gradle assembleRelease --no-daemon && break
+            echo "재시도 $i (저장소 일시 오류일 수 있음)"; sleep 45
+          done
+          test -f app/build/outputs/apk/release/app-release.apk
       - name: Rename
         run: cp app/build/outputs/apk/release/app-release.apk budget-app.apk
       - uses: actions/upload-artifact@v4
